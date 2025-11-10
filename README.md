@@ -12,26 +12,10 @@ Dette rollespil giver eleverne hands-on erfaring med:
 - **Budgetprioritering** - hvordan man fordeler begrænsede ressourcer
 - **Politisk realisme** - forståelse for at ikke alle får lige meget
 
-## 🎯 Undervisningskontekst
-
-Rollespillet passer til undervisning i:
-- Samfundsfag (kommunalpolitik, demokrati)
-- Social Studies (magtfordeling, interessegrupper)
-- Politik på mange niveauer (samspillet mellem stat, regioner og kommuner)
-
-**Anbefalet klassetrin:** 7.-10. klasse
-**Varighed:** 1-2 lektioner (60-120 minutter)
-**Antal elever:** Minimum 10, optimalt 20-25
-
 ## 🚀 Kom i gang
 
 ### Installation
 Ingen installation nødvendig! Åbn blot `index.html` i en moderne webbrowser.
-
-**Understøttede browsere:**
-- Chrome/Edge (anbefalet)
-- Firefox
-- Safari
 
 ### Hurtig start
 1. Åbn `index.html` i din browser
@@ -246,5 +230,3 @@ Har du forslag til forbedringer eller har fundet en fejl?
 ---
 
 **God fornøjelse med rollespillet!** 🎭🏛️
-
-*Udviklet til undervisning i kommunalpolitik og demokrati*
