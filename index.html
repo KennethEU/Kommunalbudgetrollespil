@@ -608,22 +608,22 @@
                 if (!studentName || !studentName.trim()) {
                     return;
                 }
-                
+
                 const parsedName = inputMode === 'names' ? parseName(studentName.trim()) : studentName.trim();
-                
+
                 // Find den mindste gruppe
                 const minSize = Math.min(...interestGroups.map(g => g.members.length));
                 const smallestGroupIndex = interestGroups.findIndex(g => g.members.length === minSize);
-                
+
                 // Tilføj elev til mindste gruppe
                 const updatedGroups = [...interestGroups];
                 updatedGroups[smallestGroupIndex] = {
                     ...updatedGroups[smallestGroupIndex],
                     members: [...updatedGroups[smallestGroupIndex].members, parsedName]
                 };
-                
+
                 setInterestGroups(updatedGroups);
-                
+
                 // Hvis byråd er dannet, gendan dem
                 if (byraad) {
                     alert('OBS: Byråd skal gendannes efter tilføjelse af ny elev. Klik "Lav byråd" igen.');
@@ -631,7 +631,38 @@
                     setBudgetResults(null);
                 }
             };
-            
+
+            const editStudentName = (oldName, groupIndex, memberIndex) => {
+                const newName = prompt(`Ret elevnavn:\n\nGammelt navn: ${oldName}\n\nIndtast nyt navn:`, oldName);
+                if (!newName || !newName.trim() || newName.trim() === oldName) {
+                    return; // Annulleret eller ingen ændring
+                }
+
+                const trimmedName = newName.trim();
+
+                // Opdater i interessegrupper
+                const updatedGroups = [...interestGroups];
+                updatedGroups[groupIndex] = {
+                    ...updatedGroups[groupIndex],
+                    members: [...updatedGroups[groupIndex].members]
+                };
+                updatedGroups[groupIndex].members[memberIndex] = trimmedName;
+                setInterestGroups(updatedGroups);
+
+                // Opdater i byråd hvis de er dannet
+                if (byraad) {
+                    const updatedByraad = byraad.map(council => ({
+                        ...council,
+                        members: council.members.map(member =>
+                            member.name === oldName
+                                ? { ...member, name: trimmedName }
+                                : member
+                        )
+                    }));
+                    setByraad(updatedByraad);
+                }
+            };
+
             const clearSavedData = () => {
                 if (confirm('Dette vil slette alle gemte data. Er du sikker?')) {
                     localStorage.removeItem('budgetrollespil_data');
@@ -902,8 +933,29 @@ Emma Nielsen
                                             </div>
                                             <ul className="member-list">
                                                 {group.members.map((member, idx) => (
-                                                    <li key={idx} className="member-item">
-                                                        {member}
+                                                    <li key={idx} className="member-item" style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center'
+                                                    }}>
+                                                        <span>{member}</span>
+                                                        <button
+                                                            onClick={() => editStudentName(member, interestGroups.indexOf(group), idx)}
+                                                            style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.9em',
+                                                                padding: '2px 6px',
+                                                                opacity: '0.6',
+                                                                transition: 'opacity 0.2s'
+                                                            }}
+                                                            onMouseOver={(e) => e.target.style.opacity = '1'}
+                                                            onMouseOut={(e) => e.target.style.opacity = '0.6'}
+                                                            title="Ret elevnavn"
+                                                        >
+                                                            ✏️
+                                                        </button>
                                                     </li>
                                                 ))}
                                             </ul>
