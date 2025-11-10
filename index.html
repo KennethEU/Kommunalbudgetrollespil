@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gruppeinddeling - Budgetrollespil</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4a5568;
+        }
+
+        .help-text {
+            font-size: 0.8em;
+            color: #718096;
+            margin-top: 3px;
+        }
+
+        .student-count-display {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e0;
+            font-size: 0.85em;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .btn-primary {
+            background: #2d3748;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #4a5568;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .results-section {
+            margin-top: 15px;
+        }
+
+        .phase-header {
+            background: #2d3748;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .phase-header h2 {
+            margin-bottom: 3px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .phase-description {
+            opacity: 0.9;
+            font-size: 0.85em;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .group-card {
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            padding: 12px;
+            background: white;
+        }
+
+        .group-header {
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #2d3748;
+        }
+
+        .group-role {
+            font-size: 0.8em;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .member-list {
+            list-style: none;
+        }
+
+        .member-item {
+            padding: 6px 8px;
+            background: #f7fafc;
+            margin-bottom: 4px;
+            border-radius: 3px;
+            border-left: 3px solid #cbd5e0;
+            font-size: 0.85em;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stats h3 {
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            color: #718096;
+            margin-top: 3px;
+            font-size: 0.8em;
+        }
+
+        .vote-config {
+            margin-top: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .vote-config h4 {
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-size: 0.95em;
+        }
+
+        .vote-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 8px;
+        }
+
+        .vote-input-group {
+            padding: 8px;
+            background: #f7fafc;
+            border-radius: 4px;
+            border: 1px solid #cbd5e0;
+        }
+
+        .vote-input-label {
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .vote-input-group input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
+        .vote-input-group input:focus {
+            outline: none;
+            border-color: #4a5568;
+        }
+
+        .alert {
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-size: 0.85em;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: #e6f2ff;
+            color: #2c5282;
+            border-color: #bee3f8;
+        }
+
+        .alert-warning {
+            background: #fef5e7;
+            color: #744210;
+            border-color: #f6e05e;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            // Prøv at loade gemt data fra localStorage
+            const loadSavedData = () => {
+                try {
+                    const saved = localStorage.getItem('budgetrollespil_data');
+                    if (saved) {
+                        return JSON.parse(saved);
+                    }
+                } catch (e) {
+                    console.error('Kunne ikke loade gemt data:', e);
+                }
+                return null;
+            };
+
+            const savedData = loadSavedData();
+
+            const [inputMode, setInputMode] = useState(savedData?.inputMode || 'names'); // 'names' eller 'count'
+            const [studentCount, setStudentCount] = useState(savedData?.studentCount || 21);
+            const [studentNames, setStudentNames] = useState(savedData?.studentNames || '');
+            const [interestGroups, setInterestGroups] = useState(savedData?.interestGroups || null);
+            const [byraad, setByraad] = useState(savedData?.byraad || null);
+            const [budgetResults, setBudgetResults] = useState(savedData?.budgetResults || null);
+            const [lastSaved, setLastSaved] = useState(savedData ? new Date() : null);
+
+            const interestGroupInfo = [
+                { name: 'Børnefamilier i Tilst', emoji: '👨‍👩‍👧‍👦', color: 'interest-group-1' },
+                { name: 'Ældre og pårørende', emoji: '👴👵', color: 'interest-group-2' },
+                { name: 'Unge og studerende', emoji: '🎓🎵', color: 'interest-group-3' },
+                { name: 'Erhvervsliv', emoji: '💼🏢', color: 'interest-group-4' },
+                { name: 'Klima og transport', emoji: '🚴🌳', color: 'interest-group-5' }
+            ];
+
+            // Randomiser stemmer ved første load (kun lige tal: 2, 4, 6)
+            const [groupVotes, setGroupVotes] = useState(() => {
+                // Hvis der er gemt data, brug det
+                if (savedData?.groupVotes) {
+                    return savedData.groupVotes;
+                }
+                
+                // Ellers lav nye tilfældige stemmer
+                const randomVotes = {};
+                const possibleVotes = [2, 4, 6];
+                for (let i = 1; i <= 5; i++) {
+                    randomVotes[i] = possibleVotes[Math.floor(Math.random() * 3)]; // 2, 4 eller 6 stemmer
+                }
+                return randomVotes;
+            });
+
+            // Gem automatisk til localStorage når data ændres
+            useEffect(() => {
+                const dataToSave = {
+                    inputMode,
+                    studentCount,
+                    studentNames,
+                    interestGroups,
+                    byraad,
+                    budgetResults,
+                    groupVotes
+                };
+                
+                try {
+                    localStorage.setItem('budgetrollespil_data', JSON.stringify(dataToSave));
+                    setLastSaved(new Date());
+                } catch (e) {
+                    console.error('Kunne ikke gemme data:', e);
+                }
+            }, [inputMode, studentCount, studentNames, interestGroups, byraad, budgetResults, groupVotes]);
+
+            // Tæl automatisk antal navne der er indtastet (kun hvis names mode)
+            const actualStudentCount = inputMode === 'names' 
+                ? (studentNames.trim() ? studentNames.split('\n').map(n => n.trim()).filter(n => n.length > 0).length : 0)
+                : studentCount;
+
+            // Funktion til at parse navn fra format "Fornavn Mellemnavn Efternavn, klasseinfo"
+            const parseName = (fullName) => {
+                // Fjern alt efter komma (klasseinfo)
+                const nameOnly = fullName.split(',')[0].trim();
+                
+                // Split på mellemrum
+                const parts = nameOnly.split(/\s+/);
+                
+                if (parts.length === 0) return fullName;
+                if (parts.length === 1) return parts[0];
+                
+                // Returnér fornavn + efternavn (første + sidste ord)
+                return `${parts[0]} ${parts[parts.length - 1]}`;
+            };
+
+            // Formatér stemmetal (vis ikke .0)
+            const formatVotes = (votes) => {
+                if (votes === Math.floor(votes)) {
+                    return Math.floor(votes);
+                }
+                return votes.toFixed(1);
+            };
+
+            const generateInterestGroups = () => {
+                let students = [];
+                
+                if (inputMode === 'names') {
+                    // Brug indtastede navne
+                    if (studentNames.trim()) {
+                        students = studentNames.split('\n')
+                            .map(name => parseName(name.trim()))
+                            .filter(name => name.length > 0);
+                    } else {
+                        alert('Indtast elevnavne først (mindst 10 elever)');
+                        return;
+                    }
+                } else {
+                    // Brug antal - lav "Elev 1", "Elev 2", osv.
+                    if (studentCount < 10) {
+                        alert('Du skal have mindst 10 elever for at lave grupper');
+                        return;
+                    }
+                    students = Array.from({ length: studentCount }, (_, i) => `Elev ${i + 1}`);
+                }
+
+                if (students.length < 10) {
+                    alert('Du skal have mindst 10 elever for at lave grupper');
+                    return;
+                }
+
+                // Shuffle students
+                const shuffled = [...students].sort(() => Math.random() - 0.5);
+                
+                // Distribute evenly across 5 groups
+                const groups = [[], [], [], [], []];
+                shuffled.forEach((student, index) => {
+                    groups[index % 5].push(student);
+                });
+
+                const groupsWithInfo = groups.map((members, index) => ({
+                    ...interestGroupInfo[index],
+                    members,
+                    groupNumber: index + 1
+                }));
+
+                setInterestGroups(groupsWithInfo);
+                setByraad(null); // Reset byråd when regenerating interest groups
+            };
+
+            const generateByraad = () => {
+                if (!interestGroups) {
+                    alert('Lav først interessegrupper!');
+                    return;
+                }
+
+                // Find min group size - this determines number of councils
+                const minSize = Math.min(...interestGroups.map(g => g.members.length));
+                const councils = [];
+
+                // Create base councils with min size (1 from each interest group)
+                for (let i = 0; i < minSize; i++) {
+                    const council = {
+                        number: i + 1,
+                        members: []
+                    };
+
+                    interestGroups.forEach(group => {
+                        council.members.push({
+                            name: group.members[i],
+                            from: group.name,
+                            emoji: group.emoji,
+                            groupId: group.groupNumber
+                        });
+                    });
+
+                    councils.push(council);
+                }
+
+                // Distribute extra members evenly across councils
+                // (so no one sits alone - they join existing councils)
+                let councilIndex = 0;
+                interestGroups.forEach(group => {
+                    // Add extra members from this group (beyond minSize)
+                    for (let i = minSize; i < group.members.length; i++) {
+                        councils[councilIndex].members.push({
+                            name: group.members[i],
+                            from: group.name,
+                            emoji: group.emoji,
+                            groupId: group.groupNumber
+                        });
+                        
+                        // Move to next council (round-robin)
+                        councilIndex = (councilIndex + 1) % councils.length;
+                    }
+                });
+
+                // Calculate vote weights for each member
+                councils.forEach(council => {
+                    // Count how many members from each group
+                    const groupCounts = {};
+                    council.members.forEach(m => {
+                        groupCounts[m.groupId] = (groupCounts[m.groupId] || 0) + 1;
+                    });
+
+                    // Assign vote weights
+                    council.members.forEach(member => {
+                        const totalGroupVotes = groupVotes[member.groupId] || 2;
+                        const membersFromGroup = groupCounts[member.groupId];
+                        member.votes = totalGroupVotes / membersFromGroup;
+                    });
+                });
+
+                setByraad(councils);
+                
+                // Initialiser budgetresultater med tomme værdier
+                const initialResults = councils.map(council => {
+                    const allocations = {};
+                    // Find unikke interessegrupper i dette byråd
+                    const uniqueGroups = [...new Set(council.members.map(m => m.groupId))];
+                    uniqueGroups.forEach(groupId => {
+                        allocations[groupId] = '';
+                    });
+                    
+                    // Initialiser stemmer (alle stemmer ikke som standard)
+                    const votes = {};
+                    council.members.forEach((member, idx) => {
+                        votes[idx] = false; // false = stemte imod/ikke stemt, true = stemte for
+                    });
+                    
+                    return {
+                        councilNumber: council.number,
+                        allocations: allocations,
+                        votes: votes
+                    };
+                });
+                setBudgetResults(initialResults);
+            };
+
+            const handleBudgetChange = (councilIndex, groupId, value) => {
+                const newResults = [...budgetResults];
+                newResults[councilIndex].allocations[groupId] = value;
+                setBudgetResults(newResults);
+            };
+            
+            const handleVoteChange = (councilIndex, memberIndex, voted) => {
+                const newResults = [...budgetResults];
+                newResults[councilIndex].votes[memberIndex] = voted;
+                setBudgetResults(newResults);
+            };
+
+            const calculateTotal = (councilIndex) => {
+                const allocations = budgetResults[councilIndex].allocations;
+                return Object.values(allocations).reduce((sum, val) => {
+                    const num = parseFloat(val) || 0;
+                    return sum + num;
+                }, 0);
+            };
+
+            const isCouncilComplete = (councilIndex) => {
+                const total = calculateTotal(councilIndex);
+                return Math.abs(total - 100) < 0.01; // Tillad lille afrunding
+            };
+            
+            const calculateVotes = (councilIndex) => {
+                const council = byraad[councilIndex];
+                const votes = budgetResults[councilIndex].votes;
+                
+                let votesFor = 0;
+                let votesAgainst = 0;
+                
+                council.members.forEach((member, idx) => {
+                    if (votes[idx] === true) {
+                        votesFor += member.votes;
+                    } else if (votes[idx] === false) {
+                        votesAgainst += member.votes;
+                    }
+                });
+                
+                return { votesFor, votesAgainst };
+            };
+
+            const handleReset = () => {
+                if (confirm('Er du sikker på du vil starte forfra? Alt data slettes.')) {
+                    setInterestGroups(null);
+                    setByraad(null);
+                    setBudgetResults(null);
+                    setStudentNames('');
+                    setInputMode('names');
+                    setStudentCount(21);
+                    setLastSaved(null);
+                    
+                    // Slet gemt data
+                    try {
+                        localStorage.removeItem('budgetrollespil_data');
+                    } catch (e) {
+                        console.error('Kunne ikke slette gemt data:', e);
+                    }
+                }
+            };
+            
+            const addLateStudent = () => {
+                const studentName = prompt('Indtast navnet på den forsinkede elev:');
+                if (!studentName || !studentName.trim()) {
+                    return;
+                }
+                
+                const parsedName = inputMode === 'names' ? parseName(studentName.trim()) : studentName.trim();
+                
+                // Find den mindste gruppe
+                const minSize = Math.min(...interestGroups.map(g => g.members.length));
+                const smallestGroupIndex = interestGroups.findIndex(g => g.members.length === minSize);
+                
+                // Tilføj elev til mindste gruppe
+                const updatedGroups = [...interestGroups];
+                updatedGroups[smallestGroupIndex] = {
+                    ...updatedGroups[smallestGroupIndex],
+                    members: [...updatedGroups[smallestGroupIndex].members, parsedName]
+                };
+                
+                setInterestGroups(updatedGroups);
+                
+                // Hvis byråd er dannet, gendan dem
+                if (byraad) {
+                    alert('OBS: Byråd skal gendannes efter tilføjelse af ny elev. Klik "Lav byråd" igen.');
+                    setByraad(null);
+                    setBudgetResults(null);
+                }
+            };
+            
+            const clearSavedData = () => {
+                if (confirm('Dette vil slette alle gemte data. Er du sikker?')) {
+                    localStorage.removeItem('budgetrollespil_data');
+                    window.location.reload();
+                }
+            };
+
+            const totalStudents = interestGroups 
+                ? interestGroups.reduce((sum, g) => sum + g.members.length, 0) 
+                : 0;
+
+            return (
+                <div className="container">
+                    <h1>🎭 Budgetrollespil: Gruppeinddeling</h1>
+                    <p className="subtitle">Aarhus Byråd 2026 - Automatisk matrix-gruppering</p>
+                    
+                    {/* Autosave status */}
+                    {lastSaved && (
+                        <div style={{
+                            background: '#f0fff4',
+                            border: '1px solid #9ae6b4',
+                            padding: '8px 12px',
+                            borderRadius: '4px',
+                            fontSize: '0.85em',
+                            textAlign: 'center',
+                            marginBottom: '15px',
+                            color: '#2f855a'
+                        }}>
+                            💾 Data gemt automatisk kl. {lastSaved.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })}
+                            {' - '}
+                            <button
+                                onClick={clearSavedData}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#2f855a',
+                                    textDecoration: 'underline',
+                                    cursor: 'pointer',
+                                    padding: 0,
+                                    fontSize: 'inherit'
+                                }}
+                            >
+                                Slet gemt data
+                            </button>
+                        </div>
+                    )}
+
+                    <div className="input-section">
+                        {savedData && !interestGroups && (
+                            <div className="alert alert-info" style={{ marginBottom: '12px' }}>
+                                <strong>✨ Velkommen tilbage!</strong> Dit tidligere arbejde er blevet indlæst automatisk.
+                            </div>
+                        )}
+                        
+                        {/* Valg mellem navne eller antal */}
+                        <div className="input-group">
+                            <label>Vælg input-metode:</label>
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                                <label style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '6px',
+                                    padding: '8px 12px',
+                                    background: inputMode === 'names' ? '#2d3748' : 'white',
+                                    color: inputMode === 'names' ? 'white' : '#2d3748',
+                                    borderRadius: '4px',
+                                    border: '1px solid #cbd5e0',
+                                    cursor: 'pointer',
+                                    fontSize: '0.9em'
+                                }}>
+                                    <input 
+                                        type="radio" 
+                                        name="inputMode" 
+                                        value="names"
+                                        checked={inputMode === 'names'}
+                                        onChange={(e) => setInputMode(e.target.value)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                    📝 Brug elevnavne
+                                </label>
+                                <label style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '6px',
+                                    padding: '8px 12px',
+                                    background: inputMode === 'count' ? '#2d3748' : 'white',
+                                    color: inputMode === 'count' ? 'white' : '#2d3748',
+                                    borderRadius: '4px',
+                                    border: '1px solid #cbd5e0',
+                                    cursor: 'pointer',
+                                    fontSize: '0.9em'
+                                }}>
+                                    <input 
+                                        type="radio" 
+                                        name="inputMode" 
+                                        value="count"
+                                        checked={inputMode === 'count'}
+                                        onChange={(e) => setInputMode(e.target.value)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                    🔢 Brug antal elever
+                                </label>
+                            </div>
+                        </div>
+                        
+                        {/* Input baseret på valgt mode */}
+                        {inputMode === 'names' ? (
+                            <div className="input-group">
+                                <label htmlFor="studentNames">Elevnavne:</label>
+                                <textarea 
+                                    id="studentNames"
+                                    value={studentNames}
+                                    onChange={(e) => setStudentNames(e.target.value)}
+                                    placeholder="Skriv et navn per linje:
+Maria Hansen
+Jonas Jensen
+Emma Nielsen
+..."
+                                />
+                                <p className="help-text">
+                                    Et navn per linje. Systemet tæller automatisk.
+                                </p>
+                                {studentNames.trim() && (
+                                    <div className="student-count-display" style={{ marginTop: '8px' }}>
+                                        📊 Antal elever indtastet: <strong>{studentNames.split('\n').filter(n => n.trim()).length}</strong>
+                                        {studentNames.split('\n').filter(n => n.trim()).length < 10 && ' (mindst 10 krævet)'}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="input-group">
+                                <label htmlFor="studentCount">Antal elever:</label>
+                                <input 
+                                    type="number" 
+                                    id="studentCount"
+                                    min="10" 
+                                    max="50" 
+                                    value={studentCount}
+                                    onChange={(e) => setStudentCount(parseInt(e.target.value) || 10)}
+                                    style={{
+                                        width: '120px',
+                                        padding: '8px 12px',
+                                        border: '1px solid #cbd5e0',
+                                        borderRadius: '4px',
+                                        fontSize: '0.95em'
+                                    }}
+                                />
+                                <p className="help-text">
+                                    Systemet vil automatisk navngive elever som "Elev 1", "Elev 2", osv.
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="input-group">
+                            <label>🗳️ Stemmevægt i byrådet (2, 4 eller 6 stemmer per interessegruppe):</label>
+                            <div className="vote-inputs">
+                                {interestGroupInfo.map((group, idx) => (
+                                    <div key={idx} className="vote-input-group">
+                                        <div className="vote-input-label">
+                                            {group.emoji} {group.name}
+                                        </div>
+                                        <input 
+                                            type="number"
+                                            min="2"
+                                            max="6"
+                                            step="2"
+                                            value={groupVotes[idx + 1]}
+                                            onChange={(e) => setGroupVotes({
+                                                ...groupVotes,
+                                                [idx + 1]: parseInt(e.target.value) || 2
+                                            })}
+                                        />
+                                        <span style={{ marginLeft: '4px', color: '#718096', fontSize: '0.8em' }}>
+                                            {(groupVotes[idx + 1] || 2) === 1 ? 'stemme' : 'stemmer'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="help-text">
+                                Stemmerne er tilfældigt fordelt ved start (kun lige tal: 2, 4 eller 6). Justér hvis du vil.
+                            </p>
+                        </div>
+
+                        <div className="button-group">
+                            <button className="btn-primary" onClick={generateInterestGroups}>
+                                📋 Lav interessegrupper (Fase 1)
+                            </button>
+                            {interestGroups && (
+                                <>
+                                    <button className="btn-secondary" onClick={generateByraad}>
+                                        🏛️ Lav byråd (Fase 2)
+                                    </button>
+                                    <button 
+                                        className="btn-secondary" 
+                                        onClick={addLateStudent}
+                                        style={{ background: '#48bb78' }}
+                                    >
+                                        ➕ Tilføj forsinket elev
+                                    </button>
+                                    <button className="btn-reset" onClick={handleReset}>
+                                        🔄 Start forfra
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {interestGroups && (
+                        <>
+                            <div className="stats">
+                                <h3>📊 Oversigt</h3>
+                                <div className="stats-grid">
+                                    <div className="stat-item">
+                                        <div className="stat-value">{totalStudents}</div>
+                                        <div className="stat-label">Elever i alt</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-value">5</div>
+                                        <div className="stat-label">Interessegrupper</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-value">{byraad ? byraad.length : '-'}</div>
+                                        <div className="stat-label">Byråd</div>
+                                    </div>
+                                    <div className="stat-item">
+                                        <div className="stat-value">
+                                            {Math.min(...interestGroups.map(g => g.members.length))} - {Math.max(...interestGroups.map(g => g.members.length))}
+                                        </div>
+                                        <div className="stat-label">Gruppestørrelse</div>
+                                    </div>
+                                </div>
+                                
+                                <div className="vote-config">
+                                    <h4>🗳️ Stemmevægt per interessegruppe:</h4>
+                                    <div className="vote-inputs">
+                                        {interestGroupInfo.map((group, idx) => (
+                                            <div key={idx} style={{ 
+                                                padding: '6px 10px', 
+                                                background: '#f7fafc', 
+                                                borderRadius: '4px',
+                                                borderLeft: '3px solid #2d3748',
+                                                fontSize: '0.85em'
+                                            }}>
+                                                <div style={{ color: '#666' }}>{group.emoji} {group.name}</div>
+                                                <div style={{ fontSize: '1.2em', fontWeight: 'bold', color: '#2d3748' }}>
+                                                    {groupVotes[idx + 1] || 2} {(groupVotes[idx + 1] || 2) === 1 ? 'stemme' : 'stemmer'}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div style={{ marginTop: '10px', padding: '8px', background: '#edf2f7', borderRadius: '4px', fontSize: '0.8em' }}>
+                                        <strong>💡 Hvorfor forskellige stemmer?</strong> I det virkelige byråd har nogle grupper mere magt. 
+                                        Stemmerne er tilfældigt fordelt (kun lige tal: 2, 4 eller 6) - ligesom virkelig politik ikke altid er retfærdig!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="results-section">
+                                <div className="phase-header">
+                                    <h2>📋 FASE 1: Interessegrupper</h2>
+                                    <p className="phase-description">
+                                        Hver gruppe skal formulere 3 krav med beløb. I vil have penge til jeres interesseområde.
+                                    </p>
+                                </div>
+
+                                <div className="groups-grid">
+                                    {interestGroups.map((group) => (
+                                        <div key={group.groupNumber} className={`group-card ${group.color}`}>
+                                            <div className="group-header">
+                                                {group.emoji} {group.name}
+                                            </div>
+                                            <div className="group-role">
+                                                Gruppe {group.groupNumber} • {group.members.length} personer
+                                            </div>
+                                            <ul className="member-list">
+                                                {group.members.map((member, idx) => (
+                                                    <li key={idx} className="member-item">
+                                                        {member}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {byraad && (
+                        <div className="results-section">
+                            <div className="phase-header">
+                                <h2>🏛️ FASE 2: Byrådene</h2>
+                                <p className="phase-description">
+                                    Nu er I politikere! Fordel 100 mio. kr. mellem interessegruppernes krav. I skal blive enige.
+                                </p>
+                            </div>
+
+                            <div className="alert alert-info">
+                                <strong>💡 Vigtigt:</strong> Hver interessegruppe har forskelligt antal stemmer i byrådet. 
+                                Hvis der er 2 personer fra samme gruppe (⭐), deler de stemmerne!
+                            </div>
+
+                            <div className="groups-grid">
+                                {byraad.map((council) => {
+                                    // Count members from each group
+                                    const groupCounts = {};
+                                    council.members.forEach(m => {
+                                        groupCounts[m.groupId] = (groupCounts[m.groupId] || 0) + 1;
+                                    });
+                                    
+                                    // Calculate total votes in council
+                                    const totalVotes = council.members.reduce((sum, m) => sum + m.votes, 0);
+                                    
+                                    return (
+                                        <div key={council.number} className="group-card byraad-card">
+                                            <div className="group-header">
+                                                🏛️ Byråd {council.number}
+                                            </div>
+                                            <div className="group-role">
+                                                {council.members.length} politikere • {formatVotes(totalVotes)} stemmer i alt
+                                            </div>
+                                            <ul className="member-list">
+                                                {council.members.map((member, idx) => (
+                                                    <li key={idx} className="member-item">
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                                                            <div>
+                                                                <strong>{member.name}</strong>
+                                                                {groupCounts[member.groupId] > 1 && ' ⭐'}
+                                                                <br />
+                                                                <small style={{ color: '#666' }}>
+                                                                    Fra: {member.emoji} {member.from}
+                                                                </small>
+                                                            </div>
+                                                            <div style={{ 
+                                                                background: '#2d3748',
+                                                                color: 'white',
+                                                                padding: '3px 8px',
+                                                                borderRadius: '3px',
+                                                                fontWeight: 'bold',
+                                                                fontSize: '0.8em',
+                                                                whiteSpace: 'nowrap'
+                                                            }}>
+                                                                🗳️ {member.votes === 1 ? '1 stemme' : `${formatVotes(member.votes)} stemmer`}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="alert alert-info">
+                                <strong>📌 Stemmer og magt:</strong> Forskellige interessegrupper har forskellig politisk magt. 
+                                Stjerner (⭐) viser hvor stemmerne er delt mellem 2 personer fra samme gruppe.
+                                <br/><br/>
+                                <strong>Spilleregler:</strong> Når I forhandler, skal flertallet af stemmerne bakke op om beslutningen. 
+                                Det betyder nogle interessegrupper har mere indflydelse end andre - ligesom i det virkelige byråd!
+                            </div>
+
+                            {/* FASE 3: Indtast resultater */}
+                            <div className="phase-header" style={{ marginTop: '20px' }}>
+                                <h2>💰 FASE 3: Indtast budgetresultater</h2>
+                                <p className="phase-description">
+                                    Indtast hvor mange millioner hver interessegruppe fik, og marker hvem der stemte for forslaget.
+                                </p>
+                            </div>
+
+                            {budgetResults && (
+                                <div className="groups-grid">
+                                    {byraad.map((council, councilIdx) => {
+                                        const uniqueGroupIds = [...new Set(council.members.map(m => m.groupId))];
+                                        const total = calculateTotal(councilIdx);
+                                        const isComplete = isCouncilComplete(councilIdx);
+                                        const { votesFor, votesAgainst } = calculateVotes(councilIdx);
+                                        const totalVotes = votesFor + votesAgainst;
+                                        
+                                        return (
+                                            <div key={council.number} className="group-card" style={{
+                                                borderLeft: isComplete ? '4px solid #48bb78' : '4px solid #cbd5e0'
+                                            }}>
+                                                <div className="group-header">
+                                                    🏛️ Byråd {council.number} {isComplete && '✅'}
+                                                </div>
+                                                <div className="group-role">
+                                                    Fordeling af 100 mio. kr.
+                                                </div>
+                                                
+                                                {/* Budget-fordeling */}
+                                                {uniqueGroupIds.sort().map(groupId => {
+                                                    const groupInfo = interestGroupInfo[groupId - 1];
+                                                    return (
+                                                        <div key={groupId} style={{ marginBottom: '10px' }}>
+                                                            <label style={{ 
+                                                                display: 'block',
+                                                                fontSize: '0.85em',
+                                                                marginBottom: '4px',
+                                                                fontWeight: '600'
+                                                            }}>
+                                                                {groupInfo.emoji} {groupInfo.name}
+                                                            </label>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max="100"
+                                                                    step="0.1"
+                                                                    value={budgetResults[councilIdx].allocations[groupId]}
+                                                                    onChange={(e) => handleBudgetChange(councilIdx, groupId, e.target.value)}
+                                                                    style={{
+                                                                        width: '80px',
+                                                                        padding: '6px 8px',
+                                                                        border: '1px solid #cbd5e0',
+                                                                        borderRadius: '4px',
+                                                                        fontSize: '0.9em'
+                                                                    }}
+                                                                />
+                                                                <span style={{ fontSize: '0.85em', color: '#666' }}>mio. kr.</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                                
+                                                <div style={{ 
+                                                    marginTop: '12px',
+                                                    paddingTop: '10px',
+                                                    borderTop: '2px solid #e2e8f0',
+                                                    fontWeight: 'bold',
+                                                    color: total === 100 ? '#48bb78' : (total > 100 ? '#e53e3e' : '#2d3748')
+                                                }}>
+                                                    I alt: {total.toFixed(1)} mio. kr.
+                                                    {total !== 100 && (
+                                                        <span style={{ fontSize: '0.85em', fontWeight: 'normal', marginLeft: '8px' }}>
+                                                            ({total > 100 ? '+' : ''}{(total - 100).toFixed(1)} mio.)
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Stemmemarkering */}
+                                                <div style={{ 
+                                                    marginTop: '15px',
+                                                    paddingTop: '12px',
+                                                    borderTop: '2px solid #e2e8f0'
+                                                }}>
+                                                    <div style={{ 
+                                                        fontSize: '0.9em',
+                                                        fontWeight: '600',
+                                                        marginBottom: '10px',
+                                                        color: '#2d3748'
+                                                    }}>
+                                                        🗳️ Hvem stemte for forslaget?
+                                                    </div>
+                                                    
+                                                    {council.members.map((member, memberIdx) => {
+                                                        const groupCounts = {};
+                                                        council.members.forEach(m => {
+                                                            groupCounts[m.groupId] = (groupCounts[m.groupId] || 0) + 1;
+                                                        });
+                                                        
+                                                        return (
+                                                            <label key={memberIdx} style={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '8px',
+                                                                padding: '6px 8px',
+                                                                background: budgetResults[councilIdx].votes[memberIdx] ? '#f0fff4' : '#f7fafc',
+                                                                marginBottom: '4px',
+                                                                borderRadius: '3px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.85em',
+                                                                borderLeft: budgetResults[councilIdx].votes[memberIdx] ? '3px solid #48bb78' : '3px solid #cbd5e0'
+                                                            }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={budgetResults[councilIdx].votes[memberIdx]}
+                                                                    onChange={(e) => handleVoteChange(councilIdx, memberIdx, e.target.checked)}
+                                                                    style={{ cursor: 'pointer' }}
+                                                                />
+                                                                <div style={{ flex: 1 }}>
+                                                                    <strong>{member.name}</strong>
+                                                                    {groupCounts[member.groupId] > 1 && ' ⭐'}
+                                                                    <span style={{ color: '#666', fontSize: '0.9em', marginLeft: '6px' }}>
+                                                                        ({member.emoji} {formatVotes(member.votes)} {member.votes === 1 ? 'stemme' : 'stemmer'})
+                                                                    </span>
+                                                                </div>
+                                                            </label>
+                                                        );
+                                                    })}
+                                                    
+                                                    <div style={{
+                                                        marginTop: '10px',
+                                                        padding: '8px',
+                                                        background: votesFor > votesAgainst ? '#f0fff4' : '#fff5f5',
+                                                        borderRadius: '4px',
+                                                        fontSize: '0.85em',
+                                                        borderLeft: votesFor > votesAgainst ? '3px solid #48bb78' : '3px solid #cbd5e0'
+                                                    }}>
+                                                        <strong>Resultat:</strong> {formatVotes(votesFor)} stemmer for, {formatVotes(votesAgainst)} stemmer imod
+                                                        {votesFor > votesAgainst && ' ✅ Forslaget er vedtaget!'}
+                                                        {votesFor <= votesAgainst && votesFor > 0 && ' ❌ Forslaget er ikke vedtaget'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* STATISTIK over alle byråds beslutninger */}
+                    {budgetResults && byraad && byraad.some((_, idx) => isCouncilComplete(idx)) && (
+                        <div className="results-section">
+                            <div className="phase-header" style={{ background: '#48bb78' }}>
+                                <h2>📊 STATISTIK: Sammenligning af byrådenes beslutninger</h2>
+                                <p className="phase-description">
+                                    Oversigt over hvordan de forskellige byråd prioriterede pengene
+                                </p>
+                            </div>
+
+                            {(() => {
+                                // Beregn statistik for hver interessegruppe
+                                const groupStats = {};
+                                const voteStats = {}; // Statistik over stemmeadfærd
+                                
+                                interestGroupInfo.forEach((group, idx) => {
+                                    const groupId = idx + 1;
+                                    const allocations = [];
+                                    
+                                    // Initialiser vote stats
+                                    voteStats[groupId] = {
+                                        votedFor: 0,
+                                        votedAgainst: 0,
+                                        totalVotes: 0
+                                    };
+                                    
+                                    byraad.forEach((council, councilIdx) => {
+                                        if (isCouncilComplete(councilIdx)) {
+                                            const amount = parseFloat(budgetResults[councilIdx].allocations[groupId]) || 0;
+                                            if (amount > 0) {
+                                                allocations.push(amount);
+                                            }
+                                            
+                                            // Beregn stemmeadfærd
+                                            council.members.forEach((member, memberIdx) => {
+                                                if (member.groupId === groupId) {
+                                                    if (budgetResults[councilIdx].votes[memberIdx] === true) {
+                                                        voteStats[groupId].votedFor++;
+                                                    } else {
+                                                        voteStats[groupId].votedAgainst++;
+                                                    }
+                                                    voteStats[groupId].totalVotes++;
+                                                }
+                                            });
+                                        }
+                                    });
+                                    
+                                    if (allocations.length > 0) {
+                                        const total = allocations.reduce((sum, val) => sum + val, 0);
+                                        const average = total / allocations.length;
+                                        const max = Math.max(...allocations);
+                                        const min = Math.min(...allocations);
+                                        
+                                        groupStats[groupId] = {
+                                            name: group.name,
+                                            emoji: group.emoji,
+                                            total,
+                                            average,
+                                            max,
+                                            min,
+                                            count: allocations.length
+                                        };
+                                    }
+                                });
+
+                                return (
+                                    <>
+                                        <div className="stats">
+                                            <h3>Tildeling per interessegruppe (gennemsnit af færdige byråd)</h3>
+                                            <div style={{ display: 'grid', gap: '12px', marginTop: '12px' }}>
+                                                {Object.entries(groupStats)
+                                                    .sort(([, a], [, b]) => b.average - a.average)
+                                                    .map(([groupId, stats]) => (
+                                                        <div key={groupId} style={{
+                                                            background: 'white',
+                                                            padding: '12px',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid #e2e8f0',
+                                                            display: 'grid',
+                                                            gridTemplateColumns: '200px 1fr',
+                                                            gap: '12px',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                            <div style={{ fontWeight: 'bold', fontSize: '0.95em' }}>
+                                                                {stats.emoji} {stats.name}
+                                                            </div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                <div style={{
+                                                                    background: '#2d3748',
+                                                                    height: '24px',
+                                                                    width: `${stats.average}%`,
+                                                                    borderRadius: '3px',
+                                                                    minWidth: '2px'
+                                                                }}></div>
+                                                                <div style={{ fontSize: '0.9em', whiteSpace: 'nowrap' }}>
+                                                                    <strong>{stats.average.toFixed(1)} mio.</strong>
+                                                                    <span style={{ color: '#718096', marginLeft: '6px' }}>
+                                                                        ({stats.min.toFixed(1)} - {stats.max.toFixed(1)} mio.)
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                            </div>
+
+                                            <div className="alert alert-info" style={{ marginTop: '15px' }}>
+                                                <strong>📈 Læsevejledning:</strong> Dette viser gennemsnittet af de byråd der har indtastet en komplet fordeling på 100 mio. kr. 
+                                                Intervallet i parentes viser laveste og højeste tildeling til gruppen.
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Stemmeadfærd statistik */}
+                                        {Object.values(voteStats).some(s => s.totalVotes > 0) && (
+                                            <div className="stats" style={{ marginTop: '15px' }}>
+                                                <h3>🗳️ Stemmeadfærd per interessegruppe</h3>
+                                                <div style={{ display: 'grid', gap: '10px', marginTop: '12px' }}>
+                                                    {Object.entries(voteStats)
+                                                        .filter(([, stats]) => stats.totalVotes > 0)
+                                                        .map(([groupId, stats]) => {
+                                                            const groupInfo = interestGroupInfo[parseInt(groupId) - 1];
+                                                            const forPercentage = (stats.votedFor / stats.totalVotes) * 100;
+                                                            
+                                                            return (
+                                                                <div key={groupId} style={{
+                                                                    background: 'white',
+                                                                    padding: '12px',
+                                                                    borderRadius: '4px',
+                                                                    border: '1px solid #e2e8f0'
+                                                                }}>
+                                                                    <div style={{ fontWeight: 'bold', fontSize: '0.9em', marginBottom: '8px' }}>
+                                                                        {groupInfo.emoji} {groupInfo.name}
+                                                                    </div>
+                                                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                                        <div style={{ flex: 1, height: '20px', background: '#f7fafc', borderRadius: '3px', overflow: 'hidden', display: 'flex' }}>
+                                                                            <div style={{
+                                                                                width: `${forPercentage}%`,
+                                                                                background: '#48bb78',
+                                                                                transition: 'width 0.3s'
+                                                                            }}></div>
+                                                                            <div style={{
+                                                                                width: `${100 - forPercentage}%`,
+                                                                                background: '#fc8181',
+                                                                                transition: 'width 0.3s'
+                                                                            }}></div>
+                                                                        </div>
+                                                                        <div style={{ fontSize: '0.85em', whiteSpace: 'nowrap' }}>
+                                                                            <span style={{ color: '#48bb78', fontWeight: 'bold' }}>✓ {stats.votedFor}</span>
+                                                                            {' / '}
+                                                                            <span style={{ color: '#fc8181', fontWeight: 'bold' }}>✗ {stats.votedAgainst}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style={{ fontSize: '0.75em', color: '#718096', marginTop: '4px' }}>
+                                                                        {forPercentage.toFixed(0)}% stemte for deres byrråds budgetforslag
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                </div>
+                                                <div className="alert alert-info" style={{ marginTop: '12px' }}>
+                                                    <strong>💡 Hvad fortæller dette?</strong> Her kan I se om medlemmer fra bestemte interessegrupper oftere stemte for eller imod budgetforslagene. 
+                                                    Høj andel "for" kan betyde gruppen fik deres ønsker opfyldt. Lav andel kan betyde de ofte måtte give efter i forhandlingerne.
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    )}
+
+                    {!interestGroups && (
+                        <div className="alert alert-info">
+                            <strong>🚀 Kom i gang:</strong> Indtast elevnavne (et per linje) og klik "Lav interessegrupper" for at starte.
+                            <br/><br/>
+                            <strong>💾 Auto-gem:</strong> Dit arbejde gemmes automatisk undervejs, så du kan lukke browseren og fortsætte senere.
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
