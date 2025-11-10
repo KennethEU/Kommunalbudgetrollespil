@@ -680,7 +680,7 @@
                     )}
 
                     <div className="input-section">
-                        {savedData && !interestGroups && (
+                        {savedData && (savedData.interestGroups || savedData.byraad || (savedData.studentNames && savedData.studentNames.trim())) && (
                             <div className="alert alert-info" style={{ marginBottom: '12px' }}>
                                 <strong>✨ Velkommen tilbage!</strong> Dit tidligere arbejde er blevet indlæst automatisk.
                             </div>
